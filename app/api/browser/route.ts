@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { chromium } from 'playwright'
+import { writeFile } from 'fs/promises'
+import path from 'path'
 
 export async function POST(request: NextRequest) {
     try {
@@ -13,10 +15,13 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const browser = await chromium.launch({
+        const server = await chromium.launchServer({
             headless: false,
             timeout
         })
+
+        const endpoint = server.wsEndpoint()
+        const browser = await chromium.connect(endpoint)
 
         const context = await browser.newContext()
         const page = await context.newPage()
@@ -25,11 +30,22 @@ export async function POST(request: NextRequest) {
         const pageTitle = await page.title()
         const pageUrl = page.url()
 
+        const browserStatePath = path.join(process.cwd(), 'browser-state.json')
+
+        await writeFile(
+            browserStatePath,
+            JSON.stringify({
+                endpoint: endpoint,
+                timestamp: new Date().toISOString()
+            }, null, 4)
+        )
+
         return NextResponse.json({
             message: 'Browser window created successfully',
             payload: {
                 title: pageTitle,
-                url: pageUrl
+                url: pageUrl,
+                endpoint: endpoint
             }
         })
     } catch (error) {
