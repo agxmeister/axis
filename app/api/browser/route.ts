@@ -15,13 +15,13 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const server = await chromium.launchServer({
+        const browser = await chromium.launch({
             headless: false,
-            timeout
+            timeout,
+            args: ['--remote-debugging-port=9222']
         })
 
-        const endpoint = server.wsEndpoint()
-        const browser = await chromium.connect(endpoint)
+        const endpoint = 'http://localhost:9222'
 
         const context = await browser.newContext()
         const page = await context.newPage()
