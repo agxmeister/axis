@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { chromium } from 'playwright'
 import { writeFile } from 'fs/promises'
+import { randomUUID } from 'crypto'
 import path from 'path'
 
 export async function POST(request: NextRequest) {
@@ -30,22 +31,26 @@ export async function POST(request: NextRequest) {
         const pageTitle = await page.title()
         const pageUrl = page.url()
 
+        const browserId = randomUUID()
         const browserStatePath = path.join(process.cwd(), 'browser-state.json')
 
         await writeFile(
             browserStatePath,
             JSON.stringify({
-                endpoint: endpoint,
-                timestamp: new Date().toISOString()
+                [browserId]: {
+                    endpoint,
+                    timestamp: new Date().toISOString()
+                }
             }, null, 4)
         )
 
         return NextResponse.json({
             message: 'Browser window created successfully',
             payload: {
+                id: browserId,
                 title: pageTitle,
                 url: pageUrl,
-                endpoint: endpoint
+                endpoint
             }
         })
     } catch (error) {
