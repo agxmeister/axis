@@ -1,22 +1,29 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { chromium } from 'playwright'
 import { readFile } from 'fs/promises'
 import path from 'path'
 
-export async function POST() {
+export async function POST(
+    request: NextRequest,
+    { params }: { params: Promise<{ browserId: string }> }
+) {
     try {
+        const { browserId } = await params
+
         const browserStatePath = path.join(process.cwd(), 'browser-state.json')
         const stateFile = await readFile(browserStatePath, 'utf-8')
-        const { endpoint } = JSON.parse(stateFile)
+        const state = JSON.parse(stateFile)
 
-        if (!endpoint) {
+        const browserState = state[browserId]
+
+        if (!browserState) {
             return NextResponse.json(
-                { error: 'No browser endpoint found. Create a browser window first.' },
-                { status: 400 }
+                { error: `Browser with id ${browserId} not found` },
+                { status: 404 }
             )
         }
 
-        const browser = await chromium.connectOverCDP(endpoint)
+        const browser = await chromium.connectOverCDP(browserState.endpoint)
         const contexts = browser.contexts()
 
         if (contexts.length === 0) {
