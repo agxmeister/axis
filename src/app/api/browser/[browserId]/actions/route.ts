@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { chromium } from 'playwright'
 import { readFile } from 'fs/promises'
 import path from 'path'
-import { Action } from '@/app/playwright/types'
+import { Action } from '@/modules/playwright/types'
 
 export async function POST(
     request: NextRequest,
