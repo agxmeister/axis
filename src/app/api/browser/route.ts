@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { chromium } from 'playwright'
-import { writeFile } from 'fs/promises'
+import { writeFile, mkdir } from 'fs/promises'
 import { randomUUID } from 'crypto'
 import path from 'path'
 
@@ -32,15 +32,17 @@ export async function POST(request: NextRequest) {
         const pageUrl = page.url()
 
         const browserId = randomUUID()
-        const browserStatePath = path.join(process.cwd(), 'browser-state.json')
+        const browserDir = path.join(process.cwd(), 'data', 'browsers', browserId)
+        const browserStatePath = path.join(browserDir, 'state.json')
+
+        await mkdir(browserDir, { recursive: true })
 
         await writeFile(
             browserStatePath,
             JSON.stringify({
-                [browserId]: {
-                    endpoint,
-                    timestamp: new Date().toISOString()
-                }
+                id: browserId,
+                endpoint,
+                timestamp: new Date().toISOString()
             }, null, 4)
         )
 

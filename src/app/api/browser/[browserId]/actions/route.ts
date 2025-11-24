@@ -12,11 +12,9 @@ export async function POST(
         const { browserId } = await params
         const action: Action = await request.json()
 
-        const browserStatePath = path.join(process.cwd(), 'browser-state.json')
+        const browserStatePath = path.join(process.cwd(), 'data', 'browsers', browserId, 'state.json')
         const stateFile = await readFile(browserStatePath, 'utf-8')
-        const state = JSON.parse(stateFile)
-
-        const browserState = state[browserId]
+        const browserState = JSON.parse(stateFile)
 
         if (!browserState) {
             return NextResponse.json(

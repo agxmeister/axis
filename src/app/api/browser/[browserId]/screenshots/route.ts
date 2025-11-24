@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { chromium } from 'playwright'
-import { readFile } from 'fs/promises'
+import { readFile, mkdir } from 'fs/promises'
+import { randomUUID } from 'crypto'
 import path from 'path'
 
 export async function POST(
@@ -10,11 +11,9 @@ export async function POST(
     try {
         const { browserId } = await params
 
-        const browserStatePath = path.join(process.cwd(), 'browser-state.json')
+        const browserStatePath = path.join(process.cwd(), 'data', 'browsers', browserId, 'state.json')
         const stateFile = await readFile(browserStatePath, 'utf-8')
-        const state = JSON.parse(stateFile)
-
-        const browserState = state[browserId]
+        const browserState = JSON.parse(stateFile)
 
         if (!browserState) {
             return NextResponse.json(
@@ -43,13 +42,17 @@ export async function POST(
         }
 
         const page = pages[0]
-        const screenshotPath = path.join(process.cwd(), 'screenshot.png')
+        const screenshotId = randomUUID()
+        const screenshotDir = path.join(process.cwd(), 'data', 'browsers', browserId, 'screenshots')
+        const screenshotPath = path.join(screenshotDir, `${screenshotId}.png`)
 
+        await mkdir(screenshotDir, { recursive: true })
         await page.screenshot({ path: screenshotPath })
 
         return NextResponse.json({
             message: 'Screenshot created successfully',
             payload: {
+                id: screenshotId,
                 path: screenshotPath
             }
         })
