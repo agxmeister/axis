@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { chromium } from 'playwright'
-import { writeFile, mkdir } from 'fs/promises'
 import { randomUUID } from 'crypto'
 import path from 'path'
+import { PlaywrightBrowserRepository } from '@/modules/playwright/PlaywrightBrowserRepository'
+import { PlaywrightBrowserService } from '@/modules/playwright/PlaywrightBrowserService'
 
 export async function POST(request: NextRequest) {
     try {
@@ -16,35 +16,23 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const browser = await chromium.launch({
-            headless: false,
-            timeout,
-            args: ['--remote-debugging-port=9222']
-        })
+        const dataDir = path.join(process.cwd(), 'data', 'browsers')
+        const repository = new PlaywrightBrowserRepository(dataDir)
+        const playwrightService = new PlaywrightBrowserService(repository)
 
-        const endpoint = 'http://localhost:9222'
-
-        const context = await browser.newContext()
-        const page = await context.newPage()
+        const { page } = await playwrightService.getBrowser(undefined, timeout)
         await page.goto(url, { waitUntil: 'networkidle' })
 
         const pageTitle = await page.title()
         const pageUrl = page.url()
+        const endpoint = 'http://localhost:9222'
 
         const browserId = randomUUID()
-        const browserDir = path.join(process.cwd(), 'data', 'browsers', browserId)
-        const browserStatePath = path.join(browserDir, 'state.json')
-
-        await mkdir(browserDir, { recursive: true })
-
-        await writeFile(
-            browserStatePath,
-            JSON.stringify({
-                id: browserId,
-                endpoint,
-                timestamp: new Date().toISOString()
-            }, null, 4)
-        )
+        await repository.save({
+            id: browserId,
+            endpoint,
+            timestamp: new Date().toISOString()
+        })
 
         return NextResponse.json({
             message: 'Browser window created successfully',

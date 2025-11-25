@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { chromium } from 'playwright'
-import { readFile, mkdir } from 'fs/promises'
+import { mkdir } from 'fs/promises'
 import { randomUUID } from 'crypto'
 import path from 'path'
+import { PlaywrightBrowserRepository } from '@/modules/playwright/PlaywrightBrowserRepository'
+import { PlaywrightBrowserService } from '@/modules/playwright/PlaywrightBrowserService'
 
 export async function POST(
     request: NextRequest,
@@ -11,37 +12,12 @@ export async function POST(
     try {
         const { browserId } = await params
 
-        const browserStatePath = path.join(process.cwd(), 'data', 'browsers', browserId, 'state.json')
-        const stateFile = await readFile(browserStatePath, 'utf-8')
-        const browserState = JSON.parse(stateFile)
+        const dataDir = path.join(process.cwd(), 'data', 'browsers')
+        const repository = new PlaywrightBrowserRepository(dataDir)
+        const playwrightService = new PlaywrightBrowserService(repository)
 
-        if (!browserState) {
-            return NextResponse.json(
-                { error: `Browser with id ${browserId} not found` },
-                { status: 404 }
-            )
-        }
+        const { page } = await playwrightService.getBrowser(browserId)
 
-        const browser = await chromium.connectOverCDP(browserState.endpoint)
-        const contexts = browser.contexts()
-
-        if (contexts.length === 0) {
-            return NextResponse.json(
-                { error: 'No browser context found' },
-                { status: 400 }
-            )
-        }
-
-        const pages = contexts[0].pages()
-
-        if (pages.length === 0) {
-            return NextResponse.json(
-                { error: 'No page found in browser' },
-                { status: 400 }
-            )
-        }
-
-        const page = pages[0]
         const screenshotId = randomUUID()
         const screenshotDir = path.join(process.cwd(), 'data', 'browsers', browserId, 'screenshots')
         const screenshotPath = path.join(screenshotDir, `${screenshotId}.png`)
