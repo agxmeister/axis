@@ -1,4 +1,4 @@
-import { readFile, writeFile, mkdir } from 'fs/promises'
+import { readFile, writeFile, mkdir, rm } from 'fs/promises'
 import path from 'path'
 
 export interface BrowserState {
@@ -26,5 +26,10 @@ export class PlaywrightBrowserRepository {
         } catch (error) {
             return null
         }
+    }
+
+    async delete(browserId: string): Promise<void> {
+        const browserDir = path.join(this.dataDir, browserId)
+        await rm(browserDir, { recursive: true, force: true })
     }
 }

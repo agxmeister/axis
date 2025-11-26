@@ -7,7 +7,7 @@ import { PlaywrightBrowserService } from '@/modules/playwright/PlaywrightBrowser
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
-        const { url, timeout = 30000 } = body
+        const { url } = body
 
         if (!url) {
             return NextResponse.json(
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
         const repository = new PlaywrightBrowserRepository(dataDir)
         const playwrightService = new PlaywrightBrowserService(repository)
 
-        const { page } = await playwrightService.getBrowser(undefined, timeout)
+        const { page } = await playwrightService.engageBrowser()
         await page.goto(url, { waitUntil: 'networkidle' })
 
         const pageTitle = await page.title()
