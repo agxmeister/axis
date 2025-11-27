@@ -1,5 +1,11 @@
 import { Browser, Page, BrowserContext } from 'playwright'
 
+export interface BrowserState {
+    id: string
+    endpoint: string
+    timestamp: string
+}
+
 export interface BrowserConnection {
     browser: Browser
     context: BrowserContext

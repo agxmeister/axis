@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import path from 'path'
 import { Action } from '@/modules/playwright/types'
-import { PlaywrightBrowserRepository } from '@/modules/playwright/PlaywrightBrowserRepository'
+import { BrowserStateRepository } from '@/modules/playwright/BrowserStateRepository'
 import { PlaywrightBrowserService } from '@/modules/playwright/PlaywrightBrowserService'
 
 export async function POST(
@@ -13,7 +13,7 @@ export async function POST(
         const action: Action = await request.json()
 
         const dataDir = path.join(process.cwd(), 'data', 'browsers')
-        const repository = new PlaywrightBrowserRepository(dataDir)
+        const repository = new BrowserStateRepository(dataDir)
         const playwrightService = new PlaywrightBrowserService(repository)
 
         const { page } = await playwrightService.getBrowser(browserId)

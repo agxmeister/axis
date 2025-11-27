@@ -1,9 +1,9 @@
 import { chromium } from 'playwright'
-import { PlaywrightBrowserRepository } from './PlaywrightBrowserRepository'
+import { BrowserStateRepository } from './BrowserStateRepository'
 import { BrowserConnection } from './types'
 
 export class PlaywrightBrowserService {
-    constructor(private readonly repository: PlaywrightBrowserRepository) {}
+    constructor(private readonly repository: BrowserStateRepository) {}
 
     async engageBrowser(): Promise<BrowserConnection> {
         const browser = await chromium.launch({

@@ -1,13 +1,8 @@
 import { readFile, writeFile, mkdir, rm } from 'fs/promises'
 import path from 'path'
+import { BrowserState } from './types'
 
-export interface BrowserState {
-    id: string
-    endpoint: string
-    timestamp: string
-}
-
-export class PlaywrightBrowserRepository {
+export class BrowserStateRepository {
     constructor(private readonly dataDir: string) {}
 
     async save(browserState: BrowserState): Promise<void> {
