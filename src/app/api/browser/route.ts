@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { randomUUID } from 'crypto'
 import path from 'path'
 import { BrowserStateRepository } from '@/modules/playwright/BrowserStateRepository'
-import { PlaywrightBrowserService } from '@/modules/playwright/PlaywrightBrowserService'
+import { PlaywrightService } from '@/modules/playwright/PlaywrightService'
 
 export async function POST(request: NextRequest) {
     try {
@@ -18,9 +18,12 @@ export async function POST(request: NextRequest) {
 
         const dataDir = path.join(process.cwd(), 'data', 'browsers')
         const repository = new BrowserStateRepository(dataDir)
-        const playwrightService = new PlaywrightBrowserService(repository)
+        const playwrightService = new PlaywrightService(repository)
 
-        const { page } = await playwrightService.engageBrowser()
+        const browser = await playwrightService.engageBrowser()
+        const context = await browser.newContext()
+        const page = await context.newPage()
+
         await page.goto(url, { waitUntil: 'networkidle' })
 
         const pageTitle = await page.title()

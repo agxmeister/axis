@@ -1,24 +1,20 @@
-import { chromium } from 'playwright'
+import { chromium, Browser } from 'playwright'
 import { BrowserStateRepository } from './BrowserStateRepository'
-import { BrowserConnection } from './types'
 
-export class PlaywrightBrowserService {
+export class PlaywrightService {
     constructor(private readonly repository: BrowserStateRepository) {}
 
-    async engageBrowser(): Promise<BrowserConnection> {
+    async engageBrowser(): Promise<Browser> {
         const browser = await chromium.launch({
             headless: false,
             timeout: 30000,
             args: ['--remote-debugging-port=9222']
         })
 
-        const context = await browser.newContext()
-        const page = await context.newPage()
-
-        return { browser, context, page }
+        return browser
     }
 
-    async getBrowser(browserId: string): Promise<BrowserConnection> {
+    async getBrowser(browserId: string): Promise<Browser> {
         const browserState = await this.repository.findById(browserId)
 
         if (!browserState) {
@@ -26,22 +22,8 @@ export class PlaywrightBrowserService {
         }
 
         const browser = await chromium.connectOverCDP(browserState.endpoint)
-        const contexts = browser.contexts()
 
-        if (contexts.length === 0) {
-            throw new Error('No browser context found')
-        }
-
-        const context = contexts[0]
-        const pages = context.pages()
-
-        if (pages.length === 0) {
-            throw new Error('No page found in browser')
-        }
-
-        const page = pages[0]
-
-        return { browser, context, page }
+        return browser
     }
 
     async retireBrowser(browserId: string): Promise<void> {

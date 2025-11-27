@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import path from 'path'
 import { Action } from '@/modules/playwright/types'
 import { BrowserStateRepository } from '@/modules/playwright/BrowserStateRepository'
-import { PlaywrightBrowserService } from '@/modules/playwright/PlaywrightBrowserService'
+import { PlaywrightService } from '@/modules/playwright/PlaywrightService'
 
 export async function POST(
     request: NextRequest,
@@ -14,9 +14,23 @@ export async function POST(
 
         const dataDir = path.join(process.cwd(), 'data', 'browsers')
         const repository = new BrowserStateRepository(dataDir)
-        const playwrightService = new PlaywrightBrowserService(repository)
+        const playwrightService = new PlaywrightService(repository)
 
-        const { page } = await playwrightService.getBrowser(browserId)
+        const browser = await playwrightService.getBrowser(browserId)
+        const contexts = browser.contexts()
+
+        if (contexts.length === 0) {
+            throw new Error('No browser context found')
+        }
+
+        const context = contexts[0]
+        const pages = context.pages()
+
+        if (pages.length === 0) {
+            throw new Error('No page found in browser')
+        }
+
+        const page = pages[0]
 
         switch (action.type) {
             case 'click':
