@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { mkdir } from 'fs/promises'
 import { randomUUID } from 'crypto'
 import path from 'path'
-import { BrowserStateRepository } from '@/modules/playwright/BrowserStateRepository'
-import { PlaywrightService } from '@/modules/playwright/PlaywrightService'
-import { PageFactory } from '@/modules/playwright/PageFactory'
+import { BrowserStateRepository, PlaywrightService, PageFactory } from '@/modules/playwright'
 
 export async function POST(
     request: NextRequest,

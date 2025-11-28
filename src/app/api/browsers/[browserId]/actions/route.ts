@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import path from 'path'
-import { Action } from '@/modules/playwright/types'
-import { BrowserStateRepository } from '@/modules/playwright/BrowserStateRepository'
-import { PlaywrightService } from '@/modules/playwright/PlaywrightService'
-import { PageFactory } from '@/modules/playwright/PageFactory'
+import { BrowserStateRepository, PlaywrightService, PageFactory, Action } from '@/modules/playwright'
 
 export async function POST(
     request: NextRequest,
