@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto'
 import path from 'path'
 import { BrowserStateRepository } from '@/modules/playwright/BrowserStateRepository'
 import { PlaywrightService } from '@/modules/playwright/PlaywrightService'
+import { PageFactory } from '@/modules/playwright/PageFactory'
 
 export async function POST(request: NextRequest) {
     try {
@@ -19,11 +20,10 @@ export async function POST(request: NextRequest) {
         const dataDir = path.join(process.cwd(), 'data', 'browsers')
         const repository = new BrowserStateRepository(dataDir)
         const playwrightService = new PlaywrightService(repository)
+        const pageFactory = new PageFactory()
 
         const browser = await playwrightService.engageBrowser()
-        const context = await browser.newContext()
-        const page = await context.newPage()
-
+        const page = await pageFactory.create(browser)
         await page.goto(url, { waitUntil: 'networkidle' })
 
         const pageTitle = await page.title()

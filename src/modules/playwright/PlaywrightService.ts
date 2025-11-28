@@ -5,13 +5,11 @@ export class PlaywrightService {
     constructor(private readonly repository: BrowserStateRepository) {}
 
     async engageBrowser(): Promise<Browser> {
-        const browser = await chromium.launch({
+        return await chromium.launch({
             headless: false,
             timeout: 30000,
             args: ['--remote-debugging-port=9222']
         })
-
-        return browser
     }
 
     async getBrowser(browserId: string): Promise<Browser> {
@@ -21,9 +19,7 @@ export class PlaywrightService {
             throw new Error(`Browser with id ${browserId} not found`)
         }
 
-        const browser = await chromium.connectOverCDP(browserState.endpoint)
-
-        return browser
+        return await chromium.connectOverCDP(browserState.endpoint)
     }
 
     async retireBrowser(browserId: string): Promise<void> {
@@ -34,7 +30,6 @@ export class PlaywrightService {
                 const browser = await chromium.connectOverCDP(browserState.endpoint)
                 await browser.close()
             } catch (error) {
-                // Browser might already be closed, continue with cleanup
             }
         }
 
