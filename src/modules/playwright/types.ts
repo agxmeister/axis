@@ -1,7 +1,14 @@
-export interface BrowserState {
+import { Browser } from 'playwright'
+
+export interface BrowserMetadata {
     id: string
     endpoint: string
     timestamp: string
+}
+
+export interface BrowserContext {
+    browser: Browser
+    metadata: BrowserMetadata
 }
 
 export interface ClickAction {

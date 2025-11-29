@@ -1,4 +1,4 @@
-export { BrowserStateRepository } from './BrowserStateRepository'
+export { BrowserMetadataRepository } from './BrowserMetadataRepository'
 export { PlaywrightService } from './PlaywrightService'
 export { PageFactory } from './PageFactory'
-export type { BrowserState, Action, ClickAction } from './types'
+export type { BrowserMetadata, BrowserContext, Action, ClickAction } from './types'

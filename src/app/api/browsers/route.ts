@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { randomUUID } from 'crypto'
 import path from 'path'
-import { BrowserStateRepository, PlaywrightService, PageFactory } from '@/modules/playwright'
+import { BrowserMetadataRepository, PlaywrightService, PageFactory } from '@/modules/playwright'
 
 export async function POST(request: NextRequest) {
     try {
@@ -16,32 +15,24 @@ export async function POST(request: NextRequest) {
         }
 
         const dataDir = path.join(process.cwd(), 'data', 'browsers')
-        const repository = new BrowserStateRepository(dataDir)
-        const playwrightService = new PlaywrightService(repository)
-        const pageFactory = new PageFactory()
+        const browserMetadataRepository = new BrowserMetadataRepository(dataDir)
+        const playwrightService = new PlaywrightService(browserMetadataRepository)
 
-        const browser = await playwrightService.engageBrowser()
-        const page = await pageFactory.create(browser)
+        const browserContext = await playwrightService.engageBrowser()
+        const pageFactory = new PageFactory(browserContext)
+        const page = await pageFactory.create()
         await page.goto(url, { waitUntil: 'networkidle' })
 
         const pageTitle = await page.title()
         const pageUrl = page.url()
-        const endpoint = 'http://localhost:9222'
-
-        const browserId = randomUUID()
-        await repository.save({
-            id: browserId,
-            endpoint,
-            timestamp: new Date().toISOString()
-        })
 
         return NextResponse.json({
             message: 'Browser window created successfully',
             payload: {
-                id: browserId,
+                id: browserContext.metadata.id,
                 title: pageTitle,
                 url: pageUrl,
-                endpoint
+                endpoint: browserContext.metadata.endpoint
             }
         })
     } catch (error) {

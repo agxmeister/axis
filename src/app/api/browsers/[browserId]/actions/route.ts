@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import path from 'path'
-import { BrowserStateRepository, PlaywrightService, PageFactory, Action } from '@/modules/playwright'
+import { BrowserMetadataRepository, PlaywrightService, PageFactory, Action } from '@/modules/playwright'
 
 export async function POST(
     request: NextRequest,
@@ -11,12 +11,12 @@ export async function POST(
         const action: Action = await request.json()
 
         const dataDir = path.join(process.cwd(), 'data', 'browsers')
-        const repository = new BrowserStateRepository(dataDir)
+        const repository = new BrowserMetadataRepository(dataDir)
         const playwrightService = new PlaywrightService(repository)
-        const pageFactory = new PageFactory()
 
-        const browser = await playwrightService.getBrowser(browserId)
-        const page = await pageFactory.create(browser)
+        const browserContext = await playwrightService.getBrowser(browserId)
+        const pageFactory = new PageFactory(browserContext)
+        const page = await pageFactory.create()
 
         switch (action.type) {
             case 'click':

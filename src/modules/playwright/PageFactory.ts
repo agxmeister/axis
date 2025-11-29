@@ -1,12 +1,15 @@
-import { Browser, Page } from 'playwright'
+import { Page } from 'playwright'
+import { BrowserContext } from './types'
 
 export class PageFactory {
-    async create(browser: Browser): Promise<Page> {
-        const contexts = browser.contexts()
+    constructor(private readonly browserContext: BrowserContext) {}
+
+    async create(): Promise<Page> {
+        const contexts = this.browserContext.browser.contexts()
         let context
 
         if (contexts.length === 0) {
-            context = await browser.newContext()
+            context = await this.browserContext.browser.newContext()
         } else {
             context = contexts[0]
         }
