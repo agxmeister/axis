@@ -3,6 +3,7 @@ import { mkdir } from 'fs/promises'
 import { randomUUID } from 'crypto'
 import path from 'path'
 import { BrowserMetadataRepository, PlaywrightService, PageFactory } from '@/modules/playwright'
+import { ConfigFactory } from '@/modules/config'
 
 export async function POST(
     request: NextRequest,
@@ -12,8 +13,10 @@ export async function POST(
         const { browserId } = await params
 
         const dataDir = path.join(process.cwd(), 'data', 'browsers')
+        const configPath = path.join(process.cwd(), 'config.json')
         const repository = new BrowserMetadataRepository(dataDir)
-        const playwrightService = new PlaywrightService(repository)
+        const configFactory = new ConfigFactory(configPath)
+        const playwrightService = new PlaywrightService(repository, configFactory)
 
         const browserContext = await playwrightService.getBrowser(browserId)
         const pageFactory = new PageFactory(browserContext)

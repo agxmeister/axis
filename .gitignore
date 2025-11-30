@@ -3,6 +3,7 @@ data
 dist
 node_modules
 
+config*.json
 .env
 
 .next

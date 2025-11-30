@@ -2,20 +2,27 @@ import { chromium } from 'playwright'
 import { randomUUID } from 'crypto'
 import { BrowserMetadataRepository } from './BrowserMetadataRepository'
 import { BrowserContext } from './types'
+import { ConfigFactory } from '@/modules/config'
 
 export class PlaywrightService {
-    constructor(private readonly repository: BrowserMetadataRepository) {}
+    constructor(
+        private readonly repository: BrowserMetadataRepository,
+        private readonly configFactory: ConfigFactory
+    ) {}
 
     async engageBrowser(): Promise<BrowserContext> {
+        const config = this.configFactory.create()
+        const port = config.browser.port
+
         const browser = await chromium.launch({
             headless: false,
             timeout: 30000,
-            args: ['--remote-debugging-port=9222']
+            args: [`--remote-debugging-port=${port}`]
         })
 
         const metadata = {
             id: randomUUID(),
-            endpoint: 'http://localhost:9222',
+            endpoint: `http://localhost:${port}`,
             timestamp: new Date().toISOString()
         }
 

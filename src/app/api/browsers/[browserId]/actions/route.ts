@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import path from 'path'
 import { BrowserMetadataRepository, PlaywrightService, PageFactory, Action } from '@/modules/playwright'
+import { ConfigFactory } from '@/modules/config'
 
 export async function POST(
     request: NextRequest,
@@ -11,8 +12,10 @@ export async function POST(
         const action: Action = await request.json()
 
         const dataDir = path.join(process.cwd(), 'data', 'browsers')
+        const configPath = path.join(process.cwd(), 'config.json')
         const repository = new BrowserMetadataRepository(dataDir)
-        const playwrightService = new PlaywrightService(repository)
+        const configFactory = new ConfigFactory(configPath)
+        const playwrightService = new PlaywrightService(repository, configFactory)
 
         const browserContext = await playwrightService.getBrowser(browserId)
         const pageFactory = new PageFactory(browserContext)
