@@ -1,13 +1,16 @@
 import { chromium } from 'playwright'
 import { randomUUID } from 'crypto'
+import { injectable, inject } from 'inversify'
 import { BrowserMetadataRepository } from './BrowserMetadataRepository'
 import { BrowserContext } from './types'
 import { ConfigFactory } from '@/modules/config'
+import { dependencies } from '@/container/dependencies'
 
+@injectable()
 export class PlaywrightService {
     constructor(
-        private readonly repository: BrowserMetadataRepository,
-        private readonly configFactory: ConfigFactory
+        @inject(dependencies.BrowserMetadataRepository) private readonly repository: BrowserMetadataRepository,
+        @inject(dependencies.ConfigFactory) private readonly configFactory: ConfigFactory
     ) {}
 
     async engageBrowser(): Promise<BrowserContext> {

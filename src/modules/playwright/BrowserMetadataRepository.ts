@@ -1,9 +1,14 @@
 import { readFile, writeFile, mkdir, rm } from 'fs/promises'
 import path from 'path'
+import { injectable, inject } from 'inversify'
 import { BrowserMetadata } from './types'
+import { dependencies } from '@/container/dependencies'
 
+@injectable()
 export class BrowserMetadataRepository {
-    constructor(private readonly dataDir: string) {}
+    constructor(
+        @inject(dependencies.DataDir) private readonly dataDir: string
+    ) {}
 
     async save(metadata: BrowserMetadata): Promise<void> {
         const browserDir = path.join(this.dataDir, metadata.id)
