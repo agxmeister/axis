@@ -2,7 +2,7 @@ import { chromium } from 'playwright'
 import { randomUUID } from 'crypto'
 import { injectable, inject } from 'inversify'
 import { BrowserMetadataRepository } from './BrowserMetadataRepository'
-import { BrowserContext } from './types'
+import { Session, SessionContext } from './types'
 import { ConfigFactory } from '@/modules/config'
 import { dependencies } from '@/container/dependencies'
 
@@ -10,53 +10,41 @@ import { dependencies } from '@/container/dependencies'
 export class PlaywrightService {
     constructor(
         @inject(dependencies.BrowserMetadataRepository) private readonly repository: BrowserMetadataRepository,
+        @inject(dependencies.SessionContext) private readonly global: SessionContext,
         @inject(dependencies.ConfigFactory) private readonly configFactory: ConfigFactory
     ) {}
 
-    async engageBrowser(): Promise<BrowserContext> {
-        const config = this.configFactory.create()
-        const port = config.browser.port
+    async engageSession(): Promise<Session> {
+        if (this.global.session) {
+            return this.global.session
+        }
 
         const browser = await chromium.launch({
             headless: false,
-            timeout: 30000,
-            args: [`--remote-debugging-port=${port}`]
+            timeout: 30000
         })
 
         const metadata = {
             id: randomUUID(),
-            endpoint: `http://localhost:${port}`,
             timestamp: new Date().toISOString()
         }
 
         await this.repository.save(metadata)
 
-        return { browser, metadata }
+        this.global.session = { browser, metadata }
+
+        return this.global.session
     }
 
-    async getBrowser(browserId: string): Promise<BrowserContext> {
-        const metadata = await this.repository.findById(browserId)
-
-        if (!metadata) {
-            throw new Error(`Browser with id ${browserId} not found`)
-        }
-
-        const browser = await chromium.connectOverCDP(metadata.endpoint)
-
-        return { browser, metadata }
-    }
-
-    async retireBrowser(browserId: string): Promise<void> {
-        const metadata = await this.repository.findById(browserId)
-
-        if (metadata) {
+    async retireSession(sessionId: string): Promise<void> {
+        if (this.global.session) {
             try {
-                const browser = await chromium.connectOverCDP(metadata.endpoint)
-                await browser.close()
+                await this.global.session.browser.close()
             } catch (error) {
             }
+            this.global.session = undefined
         }
 
-        await this.repository.delete(browserId)
+        await this.repository.delete(sessionId)
     }
 }

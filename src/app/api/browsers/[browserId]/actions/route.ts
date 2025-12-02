@@ -12,8 +12,8 @@ export async function POST(
 
         const playwrightService = container.get<PlaywrightService>(dependencies.PlaywrightService)
 
-        const browserContext = await playwrightService.getBrowser(browserId)
-        const pageFactory = new PageFactory(browserContext)
+        const session = await playwrightService.engageSession()
+        const pageFactory = new PageFactory(session)
         const page = await pageFactory.create()
 
         switch (action.type) {

@@ -16,8 +16,8 @@ export async function POST(request: NextRequest) {
 
         const playwrightService = container.get<PlaywrightService>(dependencies.PlaywrightService)
 
-        const browserContext = await playwrightService.engageBrowser()
-        const pageFactory = new PageFactory(browserContext)
+        const session = await playwrightService.engageSession()
+        const pageFactory = new PageFactory(session)
         const page = await pageFactory.create()
         await page.goto(url, { waitUntil: 'networkidle' })
 
@@ -27,10 +27,9 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             message: 'Browser window created successfully',
             payload: {
-                id: browserContext.metadata.id,
+                id: session.metadata.id,
                 title: pageTitle,
-                url: pageUrl,
-                endpoint: browserContext.metadata.endpoint
+                url: pageUrl
             }
         })
     } catch (error) {

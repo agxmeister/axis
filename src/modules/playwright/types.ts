@@ -1,14 +1,17 @@
 import { Browser } from 'playwright'
 
-export interface BrowserMetadata {
+export interface Metadata {
     id: string
-    endpoint: string
     timestamp: string
 }
 
-export interface BrowserContext {
+export interface Session {
     browser: Browser
-    metadata: BrowserMetadata
+    metadata: Metadata
+}
+
+export interface SessionContext {
+    session: Session | undefined
 }
 
 export interface ClickAction {
