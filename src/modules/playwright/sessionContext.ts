@@ -1,7 +1,7 @@
 import { Session } from './types'
 
 declare global {
-    var session: Session | undefined
+    let session: Session | undefined;
 }
 
 export const sessionContext = global

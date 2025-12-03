@@ -7,7 +7,7 @@ import { dependencies } from '@/container/dependencies'
 @injectable()
 export class BrowserMetadataRepository {
     constructor(
-        @inject(dependencies.DataDir) private readonly dataDir: string
+        @inject(dependencies.DataPath) private readonly dataDir: string
     ) {}
 
     async save(metadata: BrowserMetadata): Promise<void> {

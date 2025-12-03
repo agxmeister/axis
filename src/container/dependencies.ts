@@ -3,6 +3,6 @@ export const dependencies = {
     SessionContext: Symbol.for('SessionContext'),
     PlaywrightService: Symbol.for('PlaywrightService'),
     ConfigFactory: Symbol.for('ConfigFactory'),
-    DataDir: Symbol.for('DataDir'),
+    DataPath: Symbol.for('DataPath'),
     ConfigPath: Symbol.for('ConfigPath')
 }

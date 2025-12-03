@@ -19,7 +19,7 @@ export async function POST(
         const page = await pageFactory.create()
 
         const screenshotId = randomUUID()
-        const screenshotDir = path.join(process.cwd(), 'data', 'browsers', browserId, 'screenshots')
+        const screenshotDir = path.join(process.cwd(), 'data', 'sessions', browserId, 'screenshots')
         const screenshotPath = path.join(screenshotDir, `${screenshotId}.png`)
 
         await mkdir(screenshotDir, { recursive: true })

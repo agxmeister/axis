@@ -2,9 +2,9 @@ import { chromium } from 'playwright'
 import { randomUUID } from 'crypto'
 import { injectable, inject } from 'inversify'
 import { BrowserMetadataRepository } from './BrowserMetadataRepository'
-import { Session, SessionContext } from './types'
 import { ConfigFactory } from '@/modules/config'
 import { dependencies } from '@/container/dependencies'
+import type { Session, SessionContext } from './types'
 
 @injectable()
 export class PlaywrightService {
