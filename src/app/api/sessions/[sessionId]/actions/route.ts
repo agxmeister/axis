@@ -4,10 +4,10 @@ import { PlaywrightService, PageFactory, Action } from '@/modules/playwright'
 
 export async function POST(
     request: NextRequest,
-    { params }: { params: Promise<{ browserId: string }> }
+    { params }: { params: Promise<{ sessionId: string }> }
 ) {
     try {
-        const { browserId } = await params
+        const { sessionId } = await params
         const action: Action = await request.json()
 
         const playwrightService = container.get<PlaywrightService>(dependencies.PlaywrightService)

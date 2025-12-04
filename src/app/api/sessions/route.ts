@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         const pageUrl = page.url()
 
         return NextResponse.json({
-            message: 'Browser window created successfully',
+            message: 'Session created successfully',
             payload: {
                 id: session.metadata.id,
                 title: pageTitle,
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
         return NextResponse.json(
             {
-                error: 'Failed to create browser window',
+                error: 'Failed to create session',
                 details: error instanceof Error ? error.message : 'Unknown error'
             },
             { status: 500 }
