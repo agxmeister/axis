@@ -1,8 +1,8 @@
 import { Browser } from 'playwright'
 
 export interface Metadata {
-    id: string
-    timestamp: string
+    sessionId: string
+    createDate: string
 }
 
 export interface Session {
@@ -10,7 +10,7 @@ export interface Session {
     metadata: Metadata
 }
 
-export interface SessionContext {
+export interface Context {
     session: Session | undefined
 }
 

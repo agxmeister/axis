@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             message: 'Session created successfully',
             payload: {
-                id: session.metadata.id,
+                id: session.metadata.sessionId,
                 title: pageTitle,
                 url: pageUrl
             }

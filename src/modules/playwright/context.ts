@@ -4,4 +4,4 @@ declare global {
     let session: Session | undefined;
 }
 
-export const sessionContext = global
+export const context = global
