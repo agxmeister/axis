@@ -1,7 +1,11 @@
-import { Session } from './types'
+import { BrowserSession } from './types'
 
 declare global {
-    let session: Session | undefined;
+    var sessions: BrowserSession[];
+}
+
+if (!global.sessions) {
+    global.sessions = []
 }
 
 export const context = global

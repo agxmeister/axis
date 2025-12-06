@@ -1,5 +1,6 @@
 export const dependencies = {
-    BrowserMetadataRepository: Symbol.for('BrowserMetadataRepository'),
+    SessionRepository: Symbol.for('SessionRepository'),
+    SessionFactory: Symbol.for('SessionFactory'),
     Context: Symbol.for('Context'),
     PlaywrightService: Symbol.for('PlaywrightService'),
     ConfigFactory: Symbol.for('ConfigFactory'),

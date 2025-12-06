@@ -1,15 +1,14 @@
-import { Page } from 'playwright'
-import { Session } from './types'
+import { Browser, Page } from 'playwright'
 
 export class PageFactory {
-    constructor(private readonly session: Session) {}
+    constructor(private readonly browser: Browser) {}
 
     async create(): Promise<Page> {
-        const contexts = this.session.browser.contexts()
+        const contexts = this.browser.contexts()
         let context
 
         if (contexts.length === 0) {
-            context = await this.session.browser.newContext()
+            context = await this.browser.newContext()
         } else {
             context = contexts[0]
         }

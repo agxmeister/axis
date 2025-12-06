@@ -1,24 +1,24 @@
 import { readFile, writeFile, mkdir, rm } from 'fs/promises'
 import path from 'path'
 import { injectable, inject } from 'inversify'
-import { Metadata } from './types'
+import { Session } from './types'
 import { dependencies } from '@/container/dependencies'
 
 @injectable()
-export class MetadataRepository {
+export class SessionRepository {
     constructor(
         @inject(dependencies.DataPath) private readonly baseDirectory: string
     ) {}
 
-    async save(metadata: Metadata): Promise<void> {
-        const metadataDirectory = path.join(this.baseDirectory, metadata.sessionId)
-        const statePath = path.join(metadataDirectory, 'state.json')
+    async save(session: Session): Promise<void> {
+        const sessionDirectory = path.join(this.baseDirectory, session.sessionId)
+        const statePath = path.join(sessionDirectory, 'state.json')
 
-        await mkdir(metadataDirectory, { recursive: true })
-        await writeFile(statePath, JSON.stringify(metadata, null, 4))
+        await mkdir(sessionDirectory, { recursive: true })
+        await writeFile(statePath, JSON.stringify(session, null, 4))
     }
 
-    async findById(sessionId: string): Promise<Metadata | null> {
+    async findById(sessionId: string): Promise<Session | null> {
         try {
             const statePath = path.join(this.baseDirectory, sessionId, 'state.json')
             const stateFile = await readFile(statePath, 'utf-8')
@@ -29,7 +29,7 @@ export class MetadataRepository {
     }
 
     async delete(sessionId: string): Promise<void> {
-        const metadataDirectory = path.join(this.baseDirectory, sessionId)
-        await rm(metadataDirectory, { recursive: true, force: true })
+        const sessionDirectory = path.join(this.baseDirectory, sessionId)
+        await rm(sessionDirectory, { recursive: true, force: true })
     }
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { container, dependencies } from '@/container'
 import { PlaywrightService, PageFactory } from '@/modules/playwright'
+import { SessionFactory } from '@/modules/sessions/SessionFactory'
 
 export async function POST(request: NextRequest) {
     try {
@@ -14,10 +15,12 @@ export async function POST(request: NextRequest) {
             )
         }
 
+        const sessionFactory = container.get<SessionFactory>(dependencies.SessionFactory)
         const playwrightService = container.get<PlaywrightService>(dependencies.PlaywrightService)
 
-        const session = await playwrightService.engageSession()
-        const pageFactory = new PageFactory(session)
+        const session = await sessionFactory.create()
+        const browser = await playwrightService.engageBrowser(session.sessionId)
+        const pageFactory = new PageFactory(browser)
         const page = await pageFactory.create()
         await page.goto(url, { waitUntil: 'networkidle' })
 
@@ -27,7 +30,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             message: 'Session created successfully',
             payload: {
-                id: session.metadata.sessionId,
+                id: session.sessionId,
+                createDate: session.createDate,
                 title: pageTitle,
                 url: pageUrl
             }

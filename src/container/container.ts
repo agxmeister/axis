@@ -2,7 +2,8 @@ import 'reflect-metadata'
 import { Container } from 'inversify'
 import path from 'path'
 import { dependencies } from './dependencies'
-import { MetadataRepository } from '@/modules/playwright/MetadataRepository'
+import { SessionRepository } from '@/modules/sessions/SessionRepository'
+import { SessionFactory } from '@/modules/sessions/SessionFactory'
 import { context } from '@/modules/playwright/context'
 import { PlaywrightService } from '@/modules/playwright/PlaywrightService'
 import { ConfigFactory } from '@/modules/config/ConfigFactory'
@@ -17,7 +18,8 @@ container.bind<string>(dependencies.ConfigPath).toConstantValue(
 )
 container.bind(dependencies.Context).toConstantValue(context)
 
-container.bind<MetadataRepository>(dependencies.BrowserMetadataRepository).to(MetadataRepository)
+container.bind<SessionRepository>(dependencies.SessionRepository).to(SessionRepository)
+container.bind<SessionFactory>(dependencies.SessionFactory).to(SessionFactory)
 container.bind<ConfigFactory>(dependencies.ConfigFactory).to(ConfigFactory)
 container.bind<PlaywrightService>(dependencies.PlaywrightService).to(PlaywrightService).inSingletonScope()
 

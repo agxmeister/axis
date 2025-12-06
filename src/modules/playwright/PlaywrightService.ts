@@ -1,22 +1,21 @@
-import { chromium } from 'playwright'
-import { randomUUID } from 'crypto'
+import { chromium, Browser } from 'playwright'
 import { injectable, inject } from 'inversify'
-import { MetadataRepository } from './MetadataRepository'
 import { ConfigFactory } from '@/modules/config'
 import { dependencies } from '@/container/dependencies'
-import type { Session, Context } from './types'
+import type { BrowserSession, Context } from './types'
 
 @injectable()
 export class PlaywrightService {
     constructor(
         @inject(dependencies.Context) private readonly context: Context,
-        @inject(dependencies.BrowserMetadataRepository) private readonly repository: MetadataRepository,
         @inject(dependencies.ConfigFactory) private readonly configFactory: ConfigFactory
     ) {}
 
-    async engageSession(): Promise<Session> {
-        if (this.context.session) {
-            return this.context.session
+    async engageBrowser(sessionId: string): Promise<Browser> {
+        const existingSession = this.context.sessions.find(s => s.sessionId === sessionId)
+
+        if (existingSession) {
+            return existingSession.browser
         }
 
         const browser = await chromium.launch({
@@ -24,27 +23,26 @@ export class PlaywrightService {
             timeout: 30000
         })
 
-        const metadata = {
-            sessionId: randomUUID(),
-            createDate: new Date().toISOString()
+        const browserSession: BrowserSession = {
+            sessionId,
+            browser
         }
 
-        await this.repository.save(metadata)
+        this.context.sessions.push(browserSession)
 
-        this.context.session = { browser, metadata }
-
-        return this.context.session
+        return browser
     }
 
-    async retireSession(sessionId: string): Promise<void> {
-        if (this.context.session) {
+    async retireBrowser(sessionId: string): Promise<void> {
+        const sessionIndex = this.context.sessions.findIndex(s => s.sessionId === sessionId)
+
+        if (sessionIndex !== -1) {
+            const session = this.context.sessions[sessionIndex]
             try {
-                await this.context.session.browser.close()
+                await session.browser.close()
             } catch (error) {
             }
-            this.context.session = undefined
+            this.context.sessions.splice(sessionIndex, 1)
         }
-
-        await this.repository.delete(sessionId)
     }
 }
