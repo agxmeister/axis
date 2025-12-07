@@ -1,7 +1,7 @@
-import { BrowserSession } from './types'
+import { Session } from '@/modules/sessions/types'
 
 declare global {
-    var sessions: BrowserSession[];
+    var sessions: Session[];
 }
 
 if (!global.sessions) {

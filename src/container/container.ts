@@ -4,7 +4,7 @@ import path from 'path'
 import { dependencies } from './dependencies'
 import { SessionRepository } from '@/modules/sessions/SessionRepository'
 import { SessionFactory } from '@/modules/sessions/SessionFactory'
-import { context } from '@/modules/playwright/context'
+import { context } from '@/modules/context/context'
 import { PlaywrightService } from '@/modules/playwright/PlaywrightService'
 import { ConfigFactory } from '@/modules/config/ConfigFactory'
 

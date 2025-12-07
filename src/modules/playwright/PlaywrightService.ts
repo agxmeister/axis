@@ -2,7 +2,7 @@ import { chromium, Browser } from 'playwright'
 import { injectable, inject } from 'inversify'
 import { ConfigFactory } from '@/modules/config'
 import { dependencies } from '@/container/dependencies'
-import type { BrowserSession, Context } from './types'
+import type { Context } from '@/modules/context/types'
 
 @injectable()
 export class PlaywrightService {
@@ -14,7 +14,7 @@ export class PlaywrightService {
     async engageBrowser(sessionId: string): Promise<Browser> {
         const existingSession = this.context.sessions.find(s => s.sessionId === sessionId)
 
-        if (existingSession) {
+        if (existingSession?.browser) {
             return existingSession.browser
         }
 
@@ -23,26 +23,22 @@ export class PlaywrightService {
             timeout: 30000
         })
 
-        const browserSession: BrowserSession = {
-            sessionId,
-            browser
+        if (existingSession) {
+            existingSession.browser = browser
         }
-
-        this.context.sessions.push(browserSession)
 
         return browser
     }
 
     async retireBrowser(sessionId: string): Promise<void> {
-        const sessionIndex = this.context.sessions.findIndex(s => s.sessionId === sessionId)
+        const session = this.context.sessions.find(s => s.sessionId === sessionId)
 
-        if (sessionIndex !== -1) {
-            const session = this.context.sessions[sessionIndex]
+        if (session?.browser) {
             try {
                 await session.browser.close()
             } catch (error) {
             }
-            this.context.sessions.splice(sessionIndex, 1)
+            session.browser = undefined
         }
     }
 }
