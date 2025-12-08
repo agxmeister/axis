@@ -22,7 +22,12 @@ export class SessionRepository {
         try {
             const statePath = path.join(this.baseDirectory, sessionId, 'state.json')
             const stateFile = await readFile(statePath, 'utf-8')
-            return JSON.parse(stateFile)
+            return {
+                ...JSON.parse(stateFile),
+                runtime: {
+                    browser: null
+                }
+            }
         } catch (error) {
             return null
         }

@@ -14,8 +14,8 @@ export class PlaywrightService {
     async engageBrowser(sessionId: string): Promise<Browser> {
         const existingSession = this.context.sessions.find(s => s.sessionId === sessionId)
 
-        if (existingSession?.browser) {
-            return existingSession.browser
+        if (existingSession?.runtime.browser) {
+            return existingSession.runtime.browser
         }
 
         const browser = await chromium.launch({
@@ -24,7 +24,7 @@ export class PlaywrightService {
         })
 
         if (existingSession) {
-            existingSession.browser = browser
+            existingSession.runtime.browser = browser
         }
 
         return browser
@@ -33,12 +33,12 @@ export class PlaywrightService {
     async retireBrowser(sessionId: string): Promise<void> {
         const session = this.context.sessions.find(s => s.sessionId === sessionId)
 
-        if (session?.browser) {
+        if (session?.runtime.browser) {
             try {
-                await session.browser.close()
+                await session.runtime.browser.close()
             } catch (error) {
             }
-            session.browser = undefined
+            session.runtime.browser = null
         }
     }
 }

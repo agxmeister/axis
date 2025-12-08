@@ -17,6 +17,9 @@ export class SessionFactory {
         const session: Session = {
             sessionId,
             createDate: new Date().toISOString(),
+            runtime: {
+                browser: null
+            }
         }
 
         await this.sessionRepository.save(session)
