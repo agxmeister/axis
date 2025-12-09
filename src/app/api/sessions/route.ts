@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
         const playwrightService = container.get<PlaywrightService>(dependencies.PlaywrightService)
 
         const session = await sessionFactory.create()
-        const browser = await playwrightService.engageBrowser(session.sessionId)
+        const browser = await playwrightService.engageBrowser(session)
         const pageFactory = new PageFactory(browser)
         const page = await pageFactory.create()
         await page.goto(url, { waitUntil: 'networkidle' })
