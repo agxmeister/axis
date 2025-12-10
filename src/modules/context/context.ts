@@ -1,4 +1,4 @@
-import { Session } from '@/modules/sessions/types'
+import { Session } from '@/modules/session'
 import type {Context} from "./types";
 
 declare global {

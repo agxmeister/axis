@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { container, dependencies } from '@/container'
 import { PlaywrightService, PageFactory } from '@/modules/playwright'
-import { SessionFactory } from '@/modules/sessions/SessionFactory'
+import { SessionFactory } from '@/modules/session'
 
 export async function POST(request: NextRequest) {
     try {

@@ -3,7 +3,7 @@ import { injectable, inject } from 'inversify'
 import { ConfigFactory } from '@/modules/config'
 import { dependencies } from '@/container/dependencies'
 import type { Context } from '@/modules/context/types'
-import type { Session } from '@/modules/sessions/types'
+import type { Session } from '@/modules/session'
 
 @injectable()
 export class PlaywrightService {
