@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { container, dependencies } from '@/container'
 import { PlaywrightService, PageFactory, Action } from '@/modules/playwright'
-import type { Context } from '@/modules/context/types'
+import { SessionService } from '@/modules/session'
 
 export async function POST(
     request: NextRequest,
@@ -11,10 +11,10 @@ export async function POST(
         const { sessionId } = await params
         const action: Action = await request.json()
 
-        const context = container.get<Context>(dependencies.Context)
+        const sessionService = container.get<SessionService>(dependencies.SessionService)
         const playwrightService = container.get<PlaywrightService>(dependencies.PlaywrightService)
 
-        const session = context.sessions.find(s => s.sessionId === sessionId)
+        const session = sessionService.findById(sessionId)
         if (!session) {
             return NextResponse.json(
                 { error: `Session not found: ${sessionId}` },
