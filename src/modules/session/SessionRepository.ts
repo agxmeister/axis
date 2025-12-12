@@ -14,8 +14,10 @@ export class SessionRepository {
         const sessionDirectory = path.join(this.baseDirectory, session.sessionId)
         const statePath = path.join(sessionDirectory, 'state.json')
 
+        const { runtime, ...persistentData } = session
+
         await mkdir(sessionDirectory, { recursive: true })
-        await writeFile(statePath, JSON.stringify(session, null, 4))
+        await writeFile(statePath, JSON.stringify(persistentData, null, 4))
     }
 
     async findById(sessionId: string): Promise<Session | null> {
