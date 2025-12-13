@@ -44,6 +44,22 @@ export async function POST(
                     }
                 })
 
+            case 'open-page':
+                if (typeof action.url !== 'string' || !action.url) {
+                    return NextResponse.json(
+                        { error: 'Open page action requires a valid URL' },
+                        { status: 400 }
+                    )
+                }
+                await page.goto(action.url)
+                return NextResponse.json({
+                    message: 'Page opened successfully',
+                    payload: {
+                        type: 'open-page',
+                        url: action.url
+                    }
+                })
+
             default:
                 return NextResponse.json(
                     { error: `Unknown action type: ${(action as Action).type}` },

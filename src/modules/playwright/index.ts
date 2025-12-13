@@ -1,3 +1,3 @@
 export { PlaywrightService } from './PlaywrightService'
 export { PageFactory } from './PageFactory'
-export type { Action, ClickAction } from './types'
+export type { Action, ClickAction, OpenPageAction } from './types'
