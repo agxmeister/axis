@@ -1,12 +1,6 @@
-export interface ClickAction {
-    type: 'click'
-    x: number
-    y: number
-}
+import { z as zod } from 'zod'
+import { clickActionSchema, openPageActionSchema, actionSchema } from './schemas'
 
-export interface OpenPageAction {
-    type: 'open-page'
-    url: string
-}
-
-export type Action = ClickAction | OpenPageAction
+export type ClickAction = zod.infer<typeof clickActionSchema>
+export type OpenPageAction = zod.infer<typeof openPageActionSchema>
+export type Action = zod.infer<typeof actionSchema>

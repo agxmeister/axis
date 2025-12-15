@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { container, dependencies } from '@/container'
-import { PlaywrightService, PageFactory, Action } from '@/modules/playwright'
+import { PlaywrightService, PageFactory, actionSchema } from '@/modules/playwright'
 import { SessionService } from '@/modules/session'
 
 export async function POST(
@@ -9,7 +9,20 @@ export async function POST(
 ) {
     try {
         const { sessionId } = await params
-        const action: Action = await request.json()
+        const body = await request.json()
+
+        const validationResult = actionSchema.safeParse(body)
+        if (!validationResult.success) {
+            return NextResponse.json(
+                {
+                    error: 'Invalid action data',
+                    details: validationResult.error.issues,
+                },
+                { status: 400 }
+            )
+        }
+
+        const action = validationResult.data
 
         const sessionService = container.get<SessionService>(dependencies.SessionService)
         const playwrightService = container.get<PlaywrightService>(dependencies.PlaywrightService)
@@ -28,12 +41,6 @@ export async function POST(
 
         switch (action.type) {
             case 'click':
-                if (typeof action.x !== 'number' || typeof action.y !== 'number') {
-                    return NextResponse.json(
-                        { error: 'Click action requires x and y coordinates' },
-                        { status: 400 }
-                    )
-                }
                 await page.mouse.click(action.x, action.y)
                 return NextResponse.json({
                     message: 'Click action performed successfully',
@@ -45,12 +52,6 @@ export async function POST(
                 })
 
             case 'open-page':
-                if (typeof action.url !== 'string' || !action.url) {
-                    return NextResponse.json(
-                        { error: 'Open page action requires a valid URL' },
-                        { status: 400 }
-                    )
-                }
                 await page.goto(action.url)
                 return NextResponse.json({
                     message: 'Page opened successfully',
@@ -59,12 +60,6 @@ export async function POST(
                         url: action.url
                     }
                 })
-
-            default:
-                return NextResponse.json(
-                    { error: `Unknown action type: ${(action as Action).type}` },
-                    { status: 400 }
-                )
         }
     } catch (error) {
         return NextResponse.json(
