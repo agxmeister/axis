@@ -4,7 +4,7 @@ import { randomUUID } from 'crypto'
 import path from 'path'
 import { container, dependencies } from '@/container'
 import { PlaywrightService, PageFactory } from '@/modules/playwright'
-import { SessionService } from '@/modules/session'
+import { getSession } from '@/modules/api'
 
 export async function POST(
     request: NextRequest,
@@ -13,16 +13,13 @@ export async function POST(
     try {
         const { sessionId } = await params
 
-        const sessionService = container.get<SessionService>(dependencies.SessionService)
-        const playwrightService = container.get<PlaywrightService>(dependencies.PlaywrightService)
-
-        const session = sessionService.findById(sessionId)
-        if (!session) {
-            return NextResponse.json(
-                { error: `Session not found: ${sessionId}` },
-                { status: 404 }
-            )
+        const sessionResult = getSession(sessionId)
+        if (!sessionResult.ok) {
+            return sessionResult.error
         }
+        const session = sessionResult.value
+
+        const playwrightService = container.get<PlaywrightService>(dependencies.PlaywrightService)
 
         const browser = await playwrightService.engageBrowser(session)
         const pageFactory = new PageFactory(browser)

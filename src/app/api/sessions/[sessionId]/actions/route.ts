@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { container, dependencies } from '@/container'
 import { PlaywrightService, PageFactory, actionSchema } from '@/modules/playwright'
-import { SessionService } from '@/modules/session'
-import { validateRequest } from '@/modules/api'
+import { validateRequest, getSession } from '@/modules/api'
 
 export async function POST(
     request: NextRequest,
@@ -16,19 +15,15 @@ export async function POST(
         if (!validationResult.ok) {
             return validationResult.error
         }
-
         const action = validationResult.value
 
-        const sessionService = container.get<SessionService>(dependencies.SessionService)
-        const playwrightService = container.get<PlaywrightService>(dependencies.PlaywrightService)
-
-        const session = sessionService.findById(sessionId)
-        if (!session) {
-            return NextResponse.json(
-                { error: `Session not found: ${sessionId}` },
-                { status: 404 }
-            )
+        const sessionResult = getSession(sessionId)
+        if (!sessionResult.ok) {
+            return sessionResult.error
         }
+        const session = sessionResult.value
+
+        const playwrightService = container.get<PlaywrightService>(dependencies.PlaywrightService)
 
         const browser = await playwrightService.engageBrowser(session)
         const pageFactory = new PageFactory(browser)
