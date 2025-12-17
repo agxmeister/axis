@@ -4,19 +4,19 @@ import { container, dependencies } from '@/container'
 import { Session, SessionService } from '@/modules/session'
 import { Result } from './types'
 
-export function validateRequest<T>(
+export function getData<T>(
     schema: zod.ZodSchema<T>,
     data: unknown
 ): Result<T, NextResponse> {
-    const validationResult = schema.safeParse(data)
+    const parseResult = schema.safeParse(data)
 
-    if (!validationResult.success) {
+    if (!parseResult.success) {
         return {
             ok: false,
             error: NextResponse.json(
                 {
                     error: 'Invalid request data',
-                    details: validationResult.error.issues,
+                    details: parseResult.error.issues,
                 },
                 { status: 400 }
             ),
@@ -25,7 +25,7 @@ export function validateRequest<T>(
 
     return {
         ok: true,
-        value: validationResult.data,
+        value: parseResult.data,
     }
 }
 

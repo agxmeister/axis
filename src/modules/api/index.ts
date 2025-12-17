@@ -1,2 +1,2 @@
 export type { Result } from './types'
-export { validateRequest, getSession } from './utils'
+export { getData, getSession } from './utils'

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { container, dependencies } from '@/container'
 import { PlaywrightService, PageFactory, actionSchema } from '@/modules/playwright'
-import { validateRequest, getSession } from '@/modules/api'
+import { getData, getSession } from '@/modules/api'
 
 export async function POST(
     request: NextRequest,
@@ -11,11 +11,11 @@ export async function POST(
         const { sessionId } = await params
         const body = await request.json()
 
-        const validationResult = validateRequest(actionSchema, body)
-        if (!validationResult.ok) {
-            return validationResult.error
+        const dataResult = getData(actionSchema, body)
+        if (!dataResult.ok) {
+            return dataResult.error
         }
-        const action = validationResult.value
+        const action = dataResult.value
 
         const sessionResult = getSession(sessionId)
         if (!sessionResult.ok) {
