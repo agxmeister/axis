@@ -15,7 +15,7 @@ export class SessionFactory {
     async create(): Promise<Session> {
         const sessionId = randomUUID()
         const session: Session = {
-            sessionId,
+            id: sessionId,
             createDate: new Date().toISOString(),
             runtime: {
                 browser: null

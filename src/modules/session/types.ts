@@ -5,7 +5,7 @@ export interface Runtime {
 }
 
 export interface Session {
-    sessionId: string
+    id: string
     createDate: string
     runtime: Runtime
 }

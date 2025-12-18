@@ -10,6 +10,6 @@ export class SessionService {
     ) {}
 
     findById(sessionId: string): Session | null {
-        return this.context.sessions.find(s => s.sessionId === sessionId) ?? null
+        return this.context.sessions.find(s => s.id === sessionId) ?? null
     }
 }

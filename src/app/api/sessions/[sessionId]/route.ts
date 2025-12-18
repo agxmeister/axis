@@ -25,7 +25,7 @@ export async function DELETE(
         await playwrightService.retireBrowser(session)
         await sessionRepository.delete(sessionId)
 
-        const sessionIndex = context.sessions.findIndex(s => s.sessionId === sessionId)
+        const sessionIndex = context.sessions.findIndex(s => s.id === sessionId)
         if (sessionIndex !== -1) {
             context.sessions.splice(sessionIndex, 1)
         }
@@ -33,7 +33,7 @@ export async function DELETE(
         return NextResponse.json({
             message: 'Session deleted successfully',
             payload: {
-                id: sessionId
+                id: sessionId,
             }
         })
     } catch (error) {

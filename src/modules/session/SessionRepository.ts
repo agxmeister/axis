@@ -11,7 +11,7 @@ export class SessionRepository {
     ) {}
 
     async save(session: Session): Promise<void> {
-        const sessionDirectory = path.join(this.baseDirectory, session.sessionId)
+        const sessionDirectory = path.join(this.baseDirectory, session.id)
         const statePath = path.join(sessionDirectory, 'state.json')
 
         const { runtime, ...persistentData } = session

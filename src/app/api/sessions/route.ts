@@ -24,16 +24,12 @@ export async function POST(request: NextRequest) {
         const page = await pageFactory.create()
         await page.goto(url, { waitUntil: 'networkidle' })
 
-        const pageTitle = await page.title()
-        const pageUrl = page.url()
+        const { runtime, ...sessionPersistentData } = session
 
         return NextResponse.json({
             message: 'Session created successfully',
             payload: {
-                id: session.sessionId,
-                createDate: session.createDate,
-                title: pageTitle,
-                url: pageUrl
+                ...sessionPersistentData,
             }
         })
     } catch (error) {
