@@ -17,7 +17,7 @@ export async function POST(
         }
         const action = dataResult.value
 
-        const sessionResult = getSession(sessionId)
+        const sessionResult = await getSession(sessionId)
         if (!sessionResult.ok) {
             return sessionResult.error
         }

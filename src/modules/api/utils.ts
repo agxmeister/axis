@@ -29,9 +29,9 @@ export function getData<T>(
     }
 }
 
-export function getSession(sessionId: string): Result<Session, NextResponse> {
+export async function getSession(sessionId: string): Promise<Result<Session, NextResponse>> {
     const sessionService = container.get<SessionService>(dependencies.SessionService)
-    const session = sessionService.findById(sessionId)
+    const session = await sessionService.findById(sessionId)
 
     if (!session) {
         return {

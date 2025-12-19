@@ -13,7 +13,7 @@ export async function POST(
     try {
         const { sessionId } = await params
 
-        const sessionResult = getSession(sessionId)
+        const sessionResult = await getSession(sessionId)
         if (!sessionResult.ok) {
             return sessionResult.error
         }
