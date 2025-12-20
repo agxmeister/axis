@@ -23,7 +23,7 @@ export class SessionFactory {
         }
 
         await this.sessionRepository.save(session)
-        this.context.sessions.push(session)
+        this.context.runtimes.set(sessionId, session.runtime)
 
         return session
     }

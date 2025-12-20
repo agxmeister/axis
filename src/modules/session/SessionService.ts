@@ -17,11 +17,11 @@ export class SessionService {
             return null
         }
 
-        const runtimeSession = this.context.sessions.find(s => s.id === sessionId)
-        if (runtimeSession) {
+        const runtime = this.context.runtimes.get(sessionId)
+        if (runtime) {
             return {
                 ...persistentSession,
-                runtime: runtimeSession.runtime
+                runtime
             }
         }
 

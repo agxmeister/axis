@@ -1,5 +1,5 @@
-import type { Session } from '@/modules/session'
+import type { Runtime } from '@/modules/session'
 
 export interface Context {
-    sessions: Session[]
+    runtimes: Map<string, Runtime>
 }
