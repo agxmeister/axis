@@ -6,5 +6,9 @@ export const dependencies = {
     PlaywrightService: Symbol.for('PlaywrightService'),
     ConfigFactory: Symbol.for('ConfigFactory'),
     DataPath: Symbol.for('DataPath'),
-    ConfigPath: Symbol.for('ConfigPath')
+    ConfigPath: Symbol.for('ConfigPath'),
+    BreadcrumbsService: Symbol.for('BreadcrumbsService'),
+    BreadcrumbsUrl: Symbol.for('BreadcrumbsUrl'),
+    BreadcrumbsAccessToken: Symbol.for('BreadcrumbsAccessToken'),
+    ScreenshotRepository: Symbol.for('ScreenshotRepository')
 }

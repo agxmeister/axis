@@ -6,6 +6,8 @@ import { SessionRepository, SessionFactory, SessionService } from '@/modules/ses
 import { context } from '@/modules/context/context'
 import { PlaywrightService } from '@/modules/playwright/PlaywrightService'
 import { ConfigFactory } from '@/modules/config/ConfigFactory'
+import { BreadcrumbsService } from '@/modules/breadcrumbs'
+import { ScreenshotRepository } from '@/modules/screenshot'
 
 const container = new Container()
 
@@ -22,5 +24,14 @@ container.bind<SessionFactory>(dependencies.SessionFactory).to(SessionFactory)
 container.bind<SessionService>(dependencies.SessionService).to(SessionService)
 container.bind<ConfigFactory>(dependencies.ConfigFactory).to(ConfigFactory)
 container.bind<PlaywrightService>(dependencies.PlaywrightService).to(PlaywrightService).inSingletonScope()
+
+container.bind<string>(dependencies.BreadcrumbsUrl).toConstantValue(
+    process.env.BREADCRUMBS_URL || 'https://breadcrumbs.agxmeister.services'
+)
+container.bind<string>(dependencies.BreadcrumbsAccessToken).toConstantValue(
+    process.env.BREADCRUMBS_ACCESS_TOKEN || ''
+)
+container.bind<BreadcrumbsService>(dependencies.BreadcrumbsService).to(BreadcrumbsService)
+container.bind<ScreenshotRepository>(dependencies.ScreenshotRepository).to(ScreenshotRepository)
 
 export { container }

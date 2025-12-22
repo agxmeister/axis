@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { mkdir } from 'fs/promises'
-import { randomUUID } from 'crypto'
-import path from 'path'
 import { container, dependencies } from '@/container'
 import { PlaywrightService, PageFactory } from '@/modules/playwright'
+import { BreadcrumbsService } from '@/modules/breadcrumbs'
+import { ScreenshotRepository, Screenshot } from '@/modules/screenshot'
 import { getSession } from '@/modules/api'
 
 export async function POST(
@@ -20,23 +19,30 @@ export async function POST(
         const session = sessionResult.value
 
         const playwrightService = container.get<PlaywrightService>(dependencies.PlaywrightService)
+        const breadcrumbsService = container.get<BreadcrumbsService>(dependencies.BreadcrumbsService)
+        const screenshotRepository = container.get<ScreenshotRepository>(dependencies.ScreenshotRepository)
 
         const browser = await playwrightService.engageBrowser(session)
         const pageFactory = new PageFactory(browser)
         const page = await pageFactory.create()
 
-        const screenshotId = randomUUID()
-        const screenshotDir = path.join(process.cwd(), 'data', 'sessions', sessionId, 'screenshots')
-        const screenshotPath = path.join(screenshotDir, `${screenshotId}.png`)
+        const screenshotBuffer = await page.screenshot({ type: 'png' })
 
-        await mkdir(screenshotDir, { recursive: true })
-        await page.screenshot({ path: screenshotPath })
+        const screenshotId = await breadcrumbsService.uploadScreenshot(screenshotBuffer)
+        const screenshotUrl = breadcrumbsService.getScreenshotUrl(screenshotId)
+
+        const screenshot: Screenshot = {
+            id: screenshotId,
+            url: screenshotUrl
+        }
+
+        await screenshotRepository.save(sessionId, screenshot, screenshotBuffer)
 
         return NextResponse.json({
             message: 'Screenshot created successfully',
             payload: {
                 id: screenshotId,
-                path: screenshotPath
+                url: screenshotUrl
             }
         })
     } catch (error) {
