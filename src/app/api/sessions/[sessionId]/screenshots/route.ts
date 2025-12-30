@@ -3,7 +3,7 @@ import { container, dependencies } from '@/container'
 import { PlaywrightService, PageFactory } from '@/modules/playwright'
 import { ScreenshotRepository, Screenshot } from '@/modules/screenshot'
 import { getSession } from '@/modules/api'
-import { randomUUID } from 'crypto'
+import { v4 as uuidv4 } from 'uuid'
 
 export async function POST(
     request: NextRequest,
@@ -27,7 +27,7 @@ export async function POST(
 
         const screenshotBuffer = await page.screenshot({ type: 'png' })
 
-        const screenshotId = randomUUID()
+        const screenshotId = uuidv4()
 
         const screenshot: Screenshot = {
             id: screenshotId

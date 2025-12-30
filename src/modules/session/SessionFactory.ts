@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify'
-import { randomUUID } from 'crypto'
+import { v4 as uuidv4 } from 'uuid'
 import { SessionRepository } from './SessionRepository'
 import { dependencies } from '@/container/dependencies'
 import { Session } from './types'
@@ -13,7 +13,7 @@ export class SessionFactory {
     ) {}
 
     async create(): Promise<Session> {
-        const sessionId = randomUUID()
+        const sessionId = uuidv4()
         const session: Session = {
             id: sessionId,
             createDate: new Date().toISOString(),
