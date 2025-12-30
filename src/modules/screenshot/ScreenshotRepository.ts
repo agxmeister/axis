@@ -27,7 +27,7 @@ export class ScreenshotRepository {
 
         await writeFile(
             path.join(screenshotDirectory, 'state.json'),
-            JSON.stringify({ url: screenshot.url }, null, 4)
+            JSON.stringify({ id: screenshot.id }, null, 4)
         )
     }
 }

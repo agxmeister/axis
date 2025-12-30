@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { container, dependencies } from '@/container'
 import { PlaywrightService, PageFactory } from '@/modules/playwright'
-import { BreadcrumbsService } from '@/modules/breadcrumbs'
 import { ScreenshotRepository, Screenshot } from '@/modules/screenshot'
 import { getSession } from '@/modules/api'
+import { randomUUID } from 'crypto'
 
 export async function POST(
     request: NextRequest,
@@ -19,7 +19,6 @@ export async function POST(
         const session = sessionResult.value
 
         const playwrightService = container.get<PlaywrightService>(dependencies.PlaywrightService)
-        const breadcrumbsService = container.get<BreadcrumbsService>(dependencies.BreadcrumbsService)
         const screenshotRepository = container.get<ScreenshotRepository>(dependencies.ScreenshotRepository)
 
         const browser = await playwrightService.engageBrowser(session)
@@ -28,21 +27,19 @@ export async function POST(
 
         const screenshotBuffer = await page.screenshot({ type: 'png' })
 
-        const screenshotId = await breadcrumbsService.uploadScreenshot(screenshotBuffer)
-        const screenshotUrl = breadcrumbsService.getScreenshotUrl(screenshotId)
+        const screenshotId = randomUUID()
 
         const screenshot: Screenshot = {
-            id: screenshotId,
-            url: screenshotUrl
+            id: screenshotId
         }
 
         await screenshotRepository.save(sessionId, screenshot, screenshotBuffer)
 
-        return NextResponse.json({
-            message: 'Screenshot created successfully',
-            payload: {
-                id: screenshotId,
-                url: screenshotUrl
+        return new NextResponse(Uint8Array.from(screenshotBuffer), {
+            status: 200,
+            headers: {
+                'Content-Type': 'image/png',
+                'Content-Disposition': `inline; filename="${screenshotId}.png"`
             }
         })
     } catch (error) {
